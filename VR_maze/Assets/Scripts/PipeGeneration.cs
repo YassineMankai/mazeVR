@@ -11,7 +11,7 @@ public class PipeGeneration : MonoBehaviour
     private const int h = 10;  
     private const int d = 5;
     private const int w = 10;
-    private const float densityMovableCubes = 0.7f;
+    private const float densityMovableCubes = 0.2f;
     private int freeCubeCount = 0;
 
 
@@ -260,7 +260,7 @@ public class PipeGeneration : MonoBehaviour
                 b = Instantiate(CornerPipe, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
             }
             b.transform.SetParent(CubesPool.transform);
-            b.transform.localPosition = new Vector3(1 + 2.5f * (freeCubeCount / 10), 7, 3.0f * (freeCubeCount % 10));
+            b.transform.localPosition = new Vector3(1 + 2.5f * (freeCubeCount / 12), 7, 2 + 3.0f * (freeCubeCount % 12));
             b.transform.name = $"Free Cube {freeCubeCount}";
             b.GetComponent<BoxCollisonHandler>().setFreeBoxIndex(freeCubeCount);
             freeCubeCount++;

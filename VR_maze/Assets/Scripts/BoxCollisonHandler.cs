@@ -23,7 +23,7 @@ public class BoxCollisonHandler : MonoBehaviour
     {
         if (transform.position.y < -2)
         {
-            transform.localPosition = new Vector3(1 + 2.5f * (freeBoxIndex / 12), 7, 2.5f * (freeBoxIndex % 12));
+            transform.localPosition = new Vector3(1 + 2.5f * (freeBoxIndex / 12), 7, 2+ 3.0f * (freeBoxIndex % 12));
         }
         
         if (collided && Vector3.Distance(otherBox.transform.position, transform.position) <1.7f)
