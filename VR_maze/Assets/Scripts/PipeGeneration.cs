@@ -11,14 +11,15 @@ public class PipeGeneration : MonoBehaviour
     private const int h = 10;  
     private const int d = 5;
     private const int w = 10;
-    private const float densityMovableCubes = 0.2f;
+    private const float densityMovableCubes = 0.7f;
+    private int freeCubeCount = 0;
+
 
     private System.Random random;
     private List<Tuple<Vector3Int, CubeState>> path;
     private Dictionary<Vector3Int, GameObject> cubes;
     private Dictionary<Tuple<Vector3Int, Vector3Int>, Vector3> cornerRotations;
 
-    private List<Tuple<GameObject, Vector3>> waitList;
 
     private Dictionary<Tuple<Vector3Int, Vector3Int>, int> weights;
 
@@ -36,7 +37,6 @@ public class PipeGeneration : MonoBehaviour
         random = new System.Random();
         path = new List<Tuple<Vector3Int, CubeState>>();
         cubes = new Dictionary<Vector3Int, GameObject>();
-        waitList = new List<Tuple<GameObject, Vector3>>();
         weights = new Dictionary<Tuple<Vector3Int, Vector3Int>, int>();
         
         cornerRotations = new Dictionary<Tuple<Vector3Int, Vector3Int>, Vector3>();
@@ -247,7 +247,6 @@ public class PipeGeneration : MonoBehaviour
         }
         else
         {
-            int freeCubeCount = waitList.Count;
             a = Instantiate(EmptyCube, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
             GameObject b;
             if (type == PipeType.DIRECT)
@@ -261,9 +260,10 @@ public class PipeGeneration : MonoBehaviour
                 b = Instantiate(CornerPipe, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
             }
             b.transform.SetParent(CubesPool.transform);
-            b.transform.localPosition = new Vector3(1 + 2.5f * (freeCubeCount / 12), 7, 2.5f * (freeCubeCount % 12));
+            b.transform.localPosition = new Vector3(1 + 2.5f * (freeCubeCount / 10), 7, 3.0f * (freeCubeCount % 10));
             b.transform.name = $"Free Cube {freeCubeCount}";
-            waitList.Add(new Tuple<GameObject, Vector3>(b, new Vector3(0,0,0)));
+            b.GetComponent<BoxCollisonHandler>().setFreeBoxIndex(freeCubeCount);
+            freeCubeCount++;
         }
 
         a.transform.SetParent(transform);
