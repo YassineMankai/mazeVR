@@ -31,7 +31,7 @@ public class BoxCollisonHandler : MonoBehaviour
             Debug.Log("inserted");
             inserted = true;
             collided = false;
-            PlayGround.GetComponent<PipeGeneration>().HandleBoxCollision(new Vector3Int((int)emptyBoxPos.x / 2, (int)emptyBoxPos.y / 2, (int)emptyBoxPos.z / 2), gameObject);
+            PlayGround.GetComponent<PipeGeneration>().HandleBoxCollision(new Vector3Int((int)emptyBoxPos.x / 2, (int)emptyBoxPos.y / 2, (int)emptyBoxPos.z / 2), otherBox, gameObject);
         }
     }
 
@@ -50,7 +50,7 @@ public class BoxCollisonHandler : MonoBehaviour
     {
         if (collided && !inserted)
         {
-            Debug.Log("activate");
+            Debug.Log("exit collision");
             collided = false;
         }
     }

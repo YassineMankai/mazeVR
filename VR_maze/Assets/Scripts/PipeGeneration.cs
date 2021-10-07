@@ -16,10 +16,10 @@ public class PipeGeneration : MonoBehaviour
 
 
     private System.Random random;
+    
     private List<Tuple<Vector3Int, CubeState>> path;
-    private Dictionary<Vector3Int, GameObject> cubes;
+    
     private Dictionary<Tuple<Vector3Int, Vector3Int>, Vector3> cornerRotations;
-
 
     private Dictionary<Tuple<Vector3Int, Vector3Int>, int> weights;
 
@@ -36,7 +36,6 @@ public class PipeGeneration : MonoBehaviour
     {
         random = new System.Random();
         path = new List<Tuple<Vector3Int, CubeState>>();
-        cubes = new Dictionary<Vector3Int, GameObject>();
         weights = new Dictionary<Tuple<Vector3Int, Vector3Int>, int>();
         
         cornerRotations = new Dictionary<Tuple<Vector3Int, Vector3Int>, Vector3>();
@@ -226,7 +225,6 @@ public class PipeGeneration : MonoBehaviour
             bool isDirect = (int)Mathf.Abs(movementInOut[0]) == 2 || (int)Mathf.Abs(movementInOut[1]) == 2 || (int)Mathf.Abs(movementInOut[2]) == 2;
             GameObject a = createPipeGameObject(localPos, currentBox.Item2, isDirect?PipeType.DIRECT:PipeType.CORNER);
             a.transform.Rotate(cornerRotations[new Tuple<Vector3Int, Vector3Int>(gridPosition - previousGridPosition, nextGridPosition - gridPosition)]);
-            cubes.Add(gridPosition, a);
         }
 
 
@@ -274,22 +272,23 @@ public class PipeGeneration : MonoBehaviour
         return a;
     }
 
-    public void HandleBoxCollision(Vector3Int gridPosition, GameObject enteredPipeBox)
+    public void HandleBoxCollision(Vector3Int gridPosition, GameObject emptyCube, GameObject cubeToInsert)
     {
-        Debug.Log($"handler callled {gridPosition} {enteredPipeBox.name}");
-        Vector3 localPos = cubes[gridPosition].transform.localPosition;
-        Quaternion localRot = cubes[gridPosition].transform.localRotation;
-        cubes[gridPosition].SetActive(false);
-        cubes.Remove(gridPosition);
-        if (enteredPipeBox.tag == "CornerBox")
-            cubes.Add(gridPosition, Instantiate(FixedCornerPipe, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity));
-        else if (enteredPipeBox.tag == "DirectBox")
-            cubes.Add(gridPosition, Instantiate(FixedDirectPipe, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity));
-        enteredPipeBox.SetActive(false);
-        cubes[gridPosition].transform.SetParent(transform);
-        cubes[gridPosition].transform.localPosition = localPos;
-        cubes[gridPosition].transform.localRotation = localRot;
+        Debug.Log($"handler callled {gridPosition} {cubeToInsert.name} {emptyCube.name}");
 
-        cubes[gridPosition].transform.name = "Filled Cube : (" + localPos.x.ToString() + " , " + localPos.y.ToString() + " , " + localPos.z.ToString() + ")";
+        Vector3 localPos = emptyCube.transform.localPosition;
+        Quaternion localRot = emptyCube.transform.localRotation;
+        emptyCube.SetActive(false);
+        GameObject insertedCube;
+        if (cubeToInsert.tag == "CornerBox")
+            insertedCube = Instantiate(FixedCornerPipe, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
+        else
+            insertedCube = Instantiate(FixedDirectPipe, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
+        cubeToInsert.SetActive(false);
+        insertedCube.transform.SetParent(transform);
+        insertedCube.transform.localPosition = localPos;
+        insertedCube.transform.localRotation = localRot;
+
+        insertedCube.transform.name = "Filled Cube : (" + localPos.x.ToString() + " , " + localPos.y.ToString() + " , " + localPos.z.ToString() + ")";
     }
 }

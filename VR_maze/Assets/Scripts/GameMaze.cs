@@ -140,7 +140,7 @@ public class GameMaze : MonoBehaviour
                 }
 
                 float test = (float)random.NextDouble();
-                float generateCriteria = 0.0f;
+                float generateCriteria;
                 if (CloseWallCount[i, j] == 8)
                 {
                     generateCriteria = 0.0f;
