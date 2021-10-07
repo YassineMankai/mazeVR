@@ -7,19 +7,21 @@ public class GameMaze : MonoBehaviour
     // Start is called before the first frame update
     enum CellState {EMPTY, WALL, FIXED_EMPTY, FIXED_WALL};
     
-    private readonly int h = 50;
-    private readonly int w = 50;
-    private readonly int fixed_range = 10;
+    private readonly int h = 36;  // h must be even
+    private readonly int w = 36; // w must be even
+    private readonly int fixed_range = 5;
 
-    public float GridSpaceSize = 2.0f;
-    private const float targetTime = 60.0f;
+    private const float GridSpaceSize = 2.0f;
+    private const float targetTime = 300.0f;
     private float currentTimer = targetTime;
     private System.Random random;
     private GameObject[,] gameGrid;
-    CellState[,] cellCurrentState;
+    private CellState[,] cellCurrentState;
+    private int[,] CloseWallCount;
 
     public GameObject FloorTilePrefab;
     public GameObject Player;
+    public GameObject GameElement;
     public GameObject Environment;
 
     void Start()
@@ -27,14 +29,15 @@ public class GameMaze : MonoBehaviour
         random = new System.Random();
         gameGrid = new GameObject[h, w];
         cellCurrentState = new CellState[h, w];
+        CloseWallCount = new int[h, w];
 
-        Player.transform.position = new Vector3(-h * GridSpaceSize / 2, 0, -w * GridSpaceSize / 2);
-        Environment.transform.localScale = new Vector3(h * GridSpaceSize + 1, 1, w * GridSpaceSize + 1);
-        
+        Player.transform.position = new Vector3(-(float)h * GridSpaceSize / 2, 0, -w * GridSpaceSize / 2);
+        GameElement.transform.position = new Vector3(-(float)h * GridSpaceSize / 2 + 3, 5, -w * GridSpaceSize / 2 + 3);
+        Environment.transform.localScale = new Vector3((float)h * GridSpaceSize, 1, w * GridSpaceSize);
+
         FillMaze(0, 0);
 
         // Here you can set fixed some cells : call LockCell(i,j) to prevent cell(i,j) from changing state
-
 
     }
 
@@ -57,13 +60,24 @@ public class GameMaze : MonoBehaviour
             return;
         }
         
+        for (int di=-1; di<=1; di++)
+        {
+            for (int dj=-1; dj<=1; dj++)
+            {
+                if (i+di>=0 && i+di<h && j+dj>=0 && j + dj < w)
+                {
+                    CloseWallCount[i + di, j + dj]++;
+                }
+            }
+        }
+
         cellCurrentState[i, j] = CellState.WALL;
 
         gameGrid[i, j] = Instantiate(FloorTilePrefab, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
         gameGrid[i, j].transform.SetParent(transform);
-        gameGrid[i, j].transform.localPosition = new Vector3((-w/ 2 + j) * GridSpaceSize, 0.05f, (-h/2 + i) * GridSpaceSize);
+        gameGrid[i, j].transform.localPosition = new Vector3((-(float)h/ 2 + i) * GridSpaceSize, 0.05f, (-(float)w /2 + j) * GridSpaceSize);
         gameGrid[i, j].transform.localScale = new Vector3(GridSpaceSize, 1, GridSpaceSize);
-        gameGrid[i, j].transform.name = "PlayGround : (" + j.ToString() + " , " + i.ToString() + ")";
+        gameGrid[i, j].transform.name = "PlayGround : (" + i.ToString() + " , " + j.ToString() + ")";
     }
 
     private void DoEmptyCell(int i, int j)
@@ -72,6 +86,18 @@ public class GameMaze : MonoBehaviour
         {
             return;
         }
+
+        for (int di = -1; di <= 1; di++)
+        {
+            for (int dj = -1; dj <= 1; dj++)
+            {
+                if (i + di >= 0 && i + di < h && j + dj >= 0 && j + dj < w)
+                {
+                    CloseWallCount[i + di, j + dj]--;
+                }
+            }
+        }
+
         Destroy(gameGrid[i, j]);
         gameGrid[i, j] = null;
         cellCurrentState[i, j] = CellState.EMPTY;
@@ -113,8 +139,26 @@ public class GameMaze : MonoBehaviour
                     continue;
                 }
 
-                int test = random.Next(0, w * h);
-                if (Mathf.Abs(test - (i * w + j)) > 300)
+                float test = (float)random.NextDouble();
+                float generateCriteria = 0.0f;
+                if (CloseWallCount[i, j] == 8)
+                {
+                    generateCriteria = 0.0f;
+                }
+                else if (CloseWallCount[i, j] == 7)
+                {
+                    generateCriteria = 0.3f;
+                }
+                else if (CloseWallCount[i, j] >= 2 && CloseWallCount[i, j] < 7)
+                {
+                    generateCriteria = 0.5f;
+                }
+                else
+                {
+                    generateCriteria = 0.7f;
+                }
+
+                if (test <= generateCriteria)
                 {
                     continue;
                 }
@@ -128,8 +172,8 @@ public class GameMaze : MonoBehaviour
 
         Vector3 PlayerPosition = Player.transform.position;
 
-        int current_j = Mathf.FloorToInt(Mathf.Clamp((w/2 + PlayerPosition.x) / GridSpaceSize, 0.0f, w - 0.5f));
-        int current_i = Mathf.FloorToInt(Mathf.Clamp((h/2 + PlayerPosition.z) / GridSpaceSize, 0.0f, h - 0.5f));
+        int current_i = Mathf.FloorToInt(Mathf.Clamp((float)h /2 + PlayerPosition.x / GridSpaceSize, 0.0f, (float)h - 0.5f));
+        int current_j = Mathf.FloorToInt(Mathf.Clamp((float)w /2 + PlayerPosition.z / GridSpaceSize, 0.0f, (float)w - 0.5f));
 
         for (int i = 0; i < h; i++)
         {

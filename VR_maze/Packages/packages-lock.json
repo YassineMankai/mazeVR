@@ -39,6 +39,12 @@
       "dependencies": {},
       "url": "https://packages.unity.com"
     },
+    "com.unity.package-manager-ui": {
+      "version": "2.2.0",
+      "depth": 0,
+      "source": "builtin",
+      "dependencies": {}
+    },
     "com.unity.subsystemregistration": {
       "version": "1.0.6",
       "depth": 1,
@@ -121,7 +127,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.picoxr": {
-      "version": "file:C:/Users/yassi/Desktop/Projects/VR_Maze/PicoXR_Platform_SDK-1.2.4_B72",
+      "version": "file:D:/Pico/PicoXR/PicoXR_Platform_SDK-1.2.4_B72/",
       "depth": 0,
       "source": "local",
       "dependencies": {

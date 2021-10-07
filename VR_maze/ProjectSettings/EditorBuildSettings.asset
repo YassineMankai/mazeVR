@@ -4,7 +4,10 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/PipePuzzle.unity
+    guid: 8734cc56d25294f4ba068e9d66c95cb2
   m_configObjects:
     Unity.XR.PXR.Settings: {fileID: 11400000, guid: 5a7c05266191dc849a6f66ca68d67114, type: 2}
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 224b5f928fbb819419486307cf55c69a, type: 2}
