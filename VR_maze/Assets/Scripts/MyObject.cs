@@ -32,7 +32,7 @@ public class MyObject : MonoBehaviour
                 Destroy(gameObject);
             } else
             {
-                this.transform.position = new Vector3(startPosition[0], startPosition[1] + 5, startPosition[2]);
+                this.transform.position = new Vector3(startPosition[0], startPosition[1] + 3, startPosition[2]);
             }
         }
     }

@@ -14,7 +14,7 @@ public class Differences : MonoBehaviour
 
         Debug.Log("Started");
         portal = GameObject.Find("Portal");
-        portal.SetActive(false);
+        portal.SetActive(true);
 
         objects = (MyObject[]) GameObject.FindObjectsOfType<MyObject>();
     }
