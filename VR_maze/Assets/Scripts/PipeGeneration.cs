@@ -5,10 +5,10 @@ using UnityEngine;
 public class PipeGeneration : MonoBehaviour
 {
     // Start is called before the first frame update
-    enum CubeState {FILLED, EMPTY};
-    enum PipeType { DIRECT, CORNER};
+    enum CubeState { FILLED, EMPTY };
+    enum PipeType { DIRECT, CORNER };
 
-    private const int h = 10;  
+    private const int h = 10;
     private const int d = 5;
     private const int w = 10;
     private const float densityMovableCubes = 0.2f;
@@ -16,9 +16,9 @@ public class PipeGeneration : MonoBehaviour
 
 
     private System.Random random;
-    
+
     private List<Tuple<Vector3Int, CubeState>> path;
-    
+
     private Dictionary<Tuple<Vector3Int, Vector3Int>, Vector3> cornerRotations;
 
     private Dictionary<Tuple<Vector3Int, Vector3Int>, int> weights;
@@ -37,7 +37,7 @@ public class PipeGeneration : MonoBehaviour
         random = new System.Random();
         path = new List<Tuple<Vector3Int, CubeState>>();
         weights = new Dictionary<Tuple<Vector3Int, Vector3Int>, int>();
-        
+
         cornerRotations = new Dictionary<Tuple<Vector3Int, Vector3Int>, Vector3>();
         calculateCornerRotations();
 
@@ -59,24 +59,25 @@ public class PipeGeneration : MonoBehaviour
     {
         Vector3Int[] directions = { new Vector3Int(1, 0, 0), new Vector3Int(0, 1, 0), new Vector3Int(0, 0, 1) };
 
-        for (int i = 0; i<h; i++)
+        for (int i = 0; i < h; i++)
         {
             for (int j = 0; j < d; j++)
             {
                 for (int k = 0; k < w; k++)
                 {
                     Vector3Int pos = new Vector3Int(i, j, k);
-                    foreach(Vector3Int dir in directions)
+                    foreach (Vector3Int dir in directions)
                     {
                         Vector3Int new_pos = pos + dir;
-                        if (new_pos.x <h && new_pos.y<d && new_pos.z < w)
+                        if (new_pos.x < h && new_pos.y < d && new_pos.z < w)
                         {
                             int value = random.Next(1, 11);
                             weights.Add(new Tuple<Vector3Int, Vector3Int>(pos, new_pos), value);
                             if (dir.z == 1)
                             {
                                 weights.Add(new Tuple<Vector3Int, Vector3Int>(new_pos, pos), (int)Mathf.Ceil(value * 2.0f));
-                            } else
+                            }
+                            else
                             {
                                 weights.Add(new Tuple<Vector3Int, Vector3Int>(new_pos, pos), (int)Mathf.Ceil(value * 1.5f));
                             }
@@ -89,7 +90,7 @@ public class PipeGeneration : MonoBehaviour
 
     private bool PrecalculatePath()  // using a greedy algorithm
     {
-        
+
         Vector3Int[] directions = { new Vector3Int(1, 0, 0), new Vector3Int(0, 1, 0), new Vector3Int(0, 0, 1),
                                     new Vector3Int(-1, 0, 0), new Vector3Int(0, -1, 0), new Vector3Int(0, 0, -1)};
 
@@ -106,12 +107,12 @@ public class PipeGeneration : MonoBehaviour
         }
 
         Vector3Int current_pos = new Vector3Int(0, 0, 0);
-        Vector3Int last_cube = new Vector3Int(h-1, d-1, w-1);
+        Vector3Int last_cube = new Vector3Int(h - 1, d - 1, w - 1);
         Vector3Int unidentified_cube = new Vector3Int(-1, -1, -1);
 
-        
 
-        while(true)
+
+        while (true)
         {
             visited[current_pos.x, current_pos.y, current_pos.z] = true;
             float test_state = (float)random.NextDouble();
@@ -133,14 +134,14 @@ public class PipeGeneration : MonoBehaviour
                 Vector3Int new_pos = current_pos + dir;
                 Tuple<Vector3Int, Vector3Int> arc = new Tuple<Vector3Int, Vector3Int>(current_pos, new_pos);
 
-                if (new_pos.x>=0 && new_pos.x<h && new_pos.y>=0 && new_pos.y<d && 
-                    new_pos.z>=0 && new_pos.z<w && !visited[new_pos.x, new_pos.y, new_pos.z])
+                if (new_pos.x >= 0 && new_pos.x < h && new_pos.y >= 0 && new_pos.y < d &&
+                    new_pos.z >= 0 && new_pos.z < w && !visited[new_pos.x, new_pos.y, new_pos.z])
                 {
                     if (weights[arc] < min_dist)
                     {
                         min_dist = weights[arc];
                         next_pos = new_pos;
-                    }  
+                    }
                 }
             }
             if (next_pos == unidentified_cube)
@@ -149,7 +150,7 @@ public class PipeGeneration : MonoBehaviour
         }
     }
 
-    
+
     private void calculateCornerRotations()
     {
         cornerRotations.Add(new Tuple<Vector3Int, Vector3Int>(Vector3Int.back, Vector3Int.left), new Vector3(0, 180, 0));
@@ -192,7 +193,7 @@ public class PipeGeneration : MonoBehaviour
     }
 
     private void GenerateCubes()
-    {        
+    {
         for (int index = 0; index < path.Count; index++)
         {
             Tuple<Vector3Int, CubeState> currentBox = path[index];
@@ -223,7 +224,7 @@ public class PipeGeneration : MonoBehaviour
 
 
             bool isDirect = (int)Mathf.Abs(movementInOut[0]) == 2 || (int)Mathf.Abs(movementInOut[1]) == 2 || (int)Mathf.Abs(movementInOut[2]) == 2;
-            GameObject a = createPipeGameObject(localPos, currentBox.Item2, isDirect?PipeType.DIRECT:PipeType.CORNER);
+            GameObject a = createPipeGameObject(localPos, currentBox.Item2, isDirect ? PipeType.DIRECT : PipeType.CORNER);
             a.transform.Rotate(cornerRotations[new Tuple<Vector3Int, Vector3Int>(gridPosition - previousGridPosition, nextGridPosition - gridPosition)]);
         }
 
@@ -238,7 +239,8 @@ public class PipeGeneration : MonoBehaviour
             if (type == PipeType.DIRECT)
             {
                 a = Instantiate(FixedDirectPipe, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
-            } else
+            }
+            else
             {
                 a = Instantiate(FixedCornerPipe, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
             }
@@ -267,8 +269,8 @@ public class PipeGeneration : MonoBehaviour
         a.transform.SetParent(transform);
         a.transform.localPosition = localPos;
         string prefix = (state == CubeState.EMPTY) ? "Empty Cube" : "Filled Cube";
-        a.transform.name = prefix +": (" + localPos.x.ToString() + " , " + localPos.y.ToString() + " , " + localPos.z.ToString() + ")";
-        
+        a.transform.name = prefix + ": (" + localPos.x.ToString() + " , " + localPos.y.ToString() + " , " + localPos.z.ToString() + ")";
+
         return a;
     }
 
