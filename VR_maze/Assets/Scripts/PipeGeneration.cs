@@ -30,13 +30,15 @@ public class PipeGeneration : MonoBehaviour
     public GameObject DirectPipe;
     public GameObject CornerPipe;
     public GameObject EmptyCube;
-
+    public GameObject Portal;
 
     void Start()
     {
         random = new System.Random();
         path = new List<Tuple<Vector3Int, CubeState>>();
         weights = new Dictionary<Tuple<Vector3Int, Vector3Int>, int>();
+
+        Portal.GetComponent<SceneSwitch>().setClosed();
 
         cornerRotations = new Dictionary<Tuple<Vector3Int, Vector3Int>, Vector3>();
         calculateCornerRotations();
@@ -73,9 +75,9 @@ public class PipeGeneration : MonoBehaviour
                         {
                             int value = random.Next(1, 11);
                             weights.Add(new Tuple<Vector3Int, Vector3Int>(pos, new_pos), value);
-                            if (dir.z == 1)
+                            if (dir.y == 1)
                             {
-                                weights.Add(new Tuple<Vector3Int, Vector3Int>(new_pos, pos), (int)Mathf.Ceil(value * 2.0f));
+                                weights.Add(new Tuple<Vector3Int, Vector3Int>(new_pos, pos), (int)Mathf.Ceil(value * 2.5f));
                             }
                             else
                             {
@@ -274,7 +276,7 @@ public class PipeGeneration : MonoBehaviour
         return a;
     }
 
-    public void HandleBoxCollision(Vector3Int gridPosition, GameObject emptyCube, GameObject cubeToInsert)
+    public void HandleBoxInsertion(Vector3Int gridPosition, GameObject emptyCube, GameObject cubeToInsert)
     {
         Debug.Log($"handler callled {gridPosition} {cubeToInsert.name} {emptyCube.name}");
 
@@ -292,5 +294,15 @@ public class PipeGeneration : MonoBehaviour
         insertedCube.transform.localRotation = localRot;
 
         insertedCube.transform.name = "Filled Cube : (" + localPos.x.ToString() + " , " + localPos.y.ToString() + " , " + localPos.z.ToString() + ")";
+        freeCubeCount--;
+        if (freeCubeCount == 0)
+        {
+            HandleVictory();
+        }
+    }
+
+    private void HandleVictory()
+    {
+        Portal.GetComponent<SceneSwitch>().setOpen();
     }
 }

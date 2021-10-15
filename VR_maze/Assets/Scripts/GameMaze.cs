@@ -8,8 +8,8 @@ public class GameMaze : MonoBehaviour
     // Start is called before the first frame update
     enum CellState { EMPTY, WALL };
 
-    private readonly int h = 20;  // h must be even
-    private readonly int w = 20; // w must be even
+    private readonly int h = 28;  // h must be even
+    private readonly int w = 28; // w must be even
     private readonly int fixed_range = 2;
 
     private const float GridSpaceSize = 2.0f;
@@ -22,9 +22,9 @@ public class GameMaze : MonoBehaviour
 
     public GameObject FloorTilePrefab;
     public GameObject Player;
-    public GameObject GameElement;
     public GameObject Environment;
-    public Transform[] portalsTransform;
+    public GameObject[] Portals;
+    private static int nbResolvedMiniGame = 0;
     static public List<System.Tuple<int, int>> fixed_area; // 0 : player pos  ;  1 : first portal;  2: second portal; 3: ...
 
     void Start()
@@ -35,8 +35,6 @@ public class GameMaze : MonoBehaviour
         CloseWallCount = new int[h, w];
         CloseWallCount = new int[h, w];
 
-        Player.transform.position = new Vector3((-(float)h / 2 + fixed_range) * GridSpaceSize, 0, (-(float)w / 2 + fixed_range) * GridSpaceSize);
-        GameElement.transform.position = new Vector3(-(float)h * GridSpaceSize / 2 + 3, 5, -w * GridSpaceSize / 2 + 3);
         Environment.transform.localScale = new Vector3((float)h * GridSpaceSize, 1, w * GridSpaceSize);
 
         if (fixed_area == null)
@@ -47,16 +45,17 @@ public class GameMaze : MonoBehaviour
             fixed_area.Add(new System.Tuple<int, int>(fixed_range, fixed_range)); // player pos
 
             fixed_area.Add(new System.Tuple<int, int>(random.Next(2 * h / 3, h - fixed_range - 1), random.Next(fixed_range, w / 3))); // 1st portal : Differences
-            fixed_area.Add(new System.Tuple<int, int>(random.Next(fixed_range, h / 3), random.Next(2 * w / 3, w - fixed_range - 1))); // 2nd portal : ObjectCollector
-            fixed_area.Add(new System.Tuple<int, int>(random.Next(2 * h / 3, h - fixed_range - 1), random.Next(2 * w / 3, w - fixed_range - 1))); // 3rd portal : PipePuzzle
+            fixed_area.Add(new System.Tuple<int, int>(random.Next(fixed_range, h / 3), random.Next(2 * w / 3, w - fixed_range - 1))); // 2nd portal : PipePuzzle 
+            //fixed_area.Add(new System.Tuple<int, int>(random.Next(2 * h / 3, h - fixed_range - 1), random.Next(2 * w / 3, w - fixed_range - 1))); // 3rd portal : ObjectCollector
 
         }
 
-        for (int portal_index = 0; portal_index < portalsTransform.Length; portal_index++)
+        for (int portal_index = 0; portal_index < Portals.Length; portal_index++)
         {
             int portal_i = fixed_area[portal_index + 1].Item1;
             int portal_j = fixed_area[portal_index + 1].Item2;
-            portalsTransform[portal_index].position = new Vector3((-(float)h / 2 + portal_i) * GridSpaceSize, 0.0f, (-(float)w / 2 + portal_j) * GridSpaceSize);
+            Portals[portal_index].transform.position = new Vector3((-(float)h / 2 + portal_i) * GridSpaceSize, 0.0f, (-(float)w / 2 + portal_j) * GridSpaceSize);
+            Portals[portal_index].GetComponent<SceneSwitch>().setOpen();
         }
 
         int player_i;
@@ -66,15 +65,19 @@ public class GameMaze : MonoBehaviour
             case "Differences":
                 player_i = fixed_area[1].Item1;
                 player_j = fixed_area[1].Item2;
-                break;
-            case "ObjectCollector":
-                player_i = fixed_area[2].Item1;
-                player_j = fixed_area[2].Item2;
+                nbResolvedMiniGame++;
+                Portals[0].GetComponent<SceneSwitch>().setClosed();
                 break;
             case "PipePuzzle":
+                player_i = fixed_area[2].Item1;
+                player_j = fixed_area[2].Item2;
+                nbResolvedMiniGame++;
+                Portals[1].GetComponent<SceneSwitch>().setClosed();
+                break;
+        /**    case "ObjectCollector":
                 player_i = fixed_area[3].Item1;
                 player_j = fixed_area[3].Item2;
-                break;
+                break; **/
             default:
                 player_i = 1;
                 player_j = 1;
@@ -96,6 +99,11 @@ public class GameMaze : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (nbResolvedMiniGame == 2)
+        {
+            HandleVictory();
+        }
+        
         currentTimer -= Time.deltaTime;
 
         if (currentTimer <= 0.0f)
@@ -106,8 +114,33 @@ public class GameMaze : MonoBehaviour
             fixed_area[0] = new System.Tuple<int, int>(Mathf.FloorToInt(Mathf.Clamp((float)h / 2 + PlayerPosition.x / GridSpaceSize, 0.0f, (float)h - 0.5f)),
                                             Mathf.FloorToInt(Mathf.Clamp((float)w / 2 + PlayerPosition.z / GridSpaceSize, 0.0f, (float)w - 0.5f)));
             GenerateMaze();
+            EmptyFixedArea();
             FillMaze();
         }
+    }
+
+    private void HandleVictory()
+    {
+        for (int i = 0; i < h; i++)
+        {
+            for (int j = 0; j < w; j++)
+            {
+                if (cellCurrentState[i, j] == CellState.WALL)
+                {
+                    FlipState(i, j);
+                }
+            }
+        }
+        GenerateMaze();
+        ShowVictoryMenu();
+
+    }
+
+    private void ShowVictoryMenu()
+    {
+        Vector3 PlayerPosition = Player.transform.position;
+        
+
     }
 
     private void GenerateMaze()

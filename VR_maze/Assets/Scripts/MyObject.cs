@@ -26,7 +26,6 @@ public class MyObject : MonoBehaviour
     {
         if (this.transform.position.y <= -50)
         {
-            Debug.Log("coucou");
             if (isOutlier)
             {
                 Destroy(gameObject);

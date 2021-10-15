@@ -5,7 +5,7 @@ using UnityEngine;
 public class Differences : MonoBehaviour
 {
     private bool finished = false;
-    private GameObject portal;
+    private GameObject Portal;
     private MyObject[] objects;
 
     // Start is called before the first frame update
@@ -13,8 +13,9 @@ public class Differences : MonoBehaviour
     {
 
         Debug.Log("Started");
-        portal = GameObject.Find("Portal");
-        portal.SetActive(true);
+        Portal = GameObject.Find("Portal");
+        Debug.Log("close portal");
+        Portal.GetComponent<SceneSwitch>().setClosed();
 
         objects = (MyObject[]) GameObject.FindObjectsOfType<MyObject>();
     }
@@ -27,7 +28,6 @@ public class Differences : MonoBehaviour
         objects = (MyObject[])GameObject.FindObjectsOfType<MyObject>();
         foreach (MyObject o in objects)
         {
-            Debug.Log(o.getIsOutlier());
             if(o.getIsOutlier())
             {
                 finished = false;
@@ -36,8 +36,7 @@ public class Differences : MonoBehaviour
 
         if (finished)
         {
-            Debug.Log("appear");
-            portal.SetActive(true);
+            Portal.GetComponent<SceneSwitch>().setOpen();
         }
         
     }

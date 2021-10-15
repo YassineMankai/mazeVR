@@ -26,12 +26,12 @@ public class BoxCollisonHandler : MonoBehaviour
             transform.localPosition = new Vector3(1 + 2.5f * (freeBoxIndex / 12), 7, 2+ 3.0f * (freeBoxIndex % 12));
         }
         
-        if (collided && Vector3.Distance(otherBox.transform.position, transform.position) <1.7f)
+        if (collided && Vector3.Distance(otherBox.transform.position, transform.position) <1.95f)
         {
             Debug.Log("inserted");
             inserted = true;
             collided = false;
-            PlayGround.GetComponent<PipeGeneration>().HandleBoxCollision(new Vector3Int((int)emptyBoxPos.x / 2, (int)emptyBoxPos.y / 2, (int)emptyBoxPos.z / 2), otherBox, gameObject);
+            PlayGround.GetComponent<PipeGeneration>().HandleBoxInsertion(new Vector3Int((int)emptyBoxPos.x / 2, (int)emptyBoxPos.y / 2, (int)emptyBoxPos.z / 2), otherBox, gameObject);
         }
     }
 
