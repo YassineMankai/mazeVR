@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5976055533773295413}
   - component: {fileID: 371854786836046700}
   - component: {fileID: 5533248037796469481}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: DirectPipeCube
   m_TagString: DirectBox
   m_Icon: {fileID: 0}
@@ -161,7 +161,7 @@ GameObject:
   - component: {fileID: 6698359937754621852}
   - component: {fileID: 4820530102180180862}
   - component: {fileID: 527902142767646146}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Pipe_0,5_1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -242,7 +242,7 @@ GameObject:
   - component: {fileID: 6734450185178759334}
   - component: {fileID: 162164526223267652}
   - component: {fileID: 8477884030264914297}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
