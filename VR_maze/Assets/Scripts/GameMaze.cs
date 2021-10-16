@@ -92,7 +92,7 @@ public class GameMaze : MonoBehaviour
                 player_i = 1 - fixed_range;
                 player_j = 1 - fixed_range;
                 EntryMessage.SetActive(true);
-                EntryMessage.transform.position = new Vector3((-(float)h / 2 + player_i + fixed_range) * GridSpaceSize, 0, (-(float)w / 2 + player_j + fixed_range) * GridSpaceSize);
+                EntryMessage.transform.position = new Vector3((-(float)h / 2 + 1 + fixed_range) * GridSpaceSize, 0, (-(float)w / 2 + 1 + fixed_range) * GridSpaceSize);
                 break;
         }
         player_i += fixed_range;
