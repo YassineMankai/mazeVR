@@ -4,7 +4,6 @@ public class BoxCollisonHandler : MonoBehaviour
 {
     private GameObject PlayGround;
     private GameObject otherBox;
-    Vector3 emptyBoxPos;
     private bool collided = false;
     private bool inserted = false;
     private int freeBoxIndex;
@@ -21,7 +20,7 @@ public class BoxCollisonHandler : MonoBehaviour
 
     private void Update()
     {
-        if (transform.position.y < -2)
+        if (transform.position.y < -40)
         {
             transform.localPosition = new Vector3(1 + 2.5f * (freeBoxIndex / 12), 7, 2+ 3.0f * (freeBoxIndex % 12));
         }
@@ -31,19 +30,19 @@ public class BoxCollisonHandler : MonoBehaviour
             Debug.Log("inserted");
             inserted = true;
             collided = false;
-            PlayGround.GetComponent<PipeGeneration>().HandleBoxInsertion(new Vector3Int((int)emptyBoxPos.x / 2, (int)emptyBoxPos.y / 2, (int)emptyBoxPos.z / 2), otherBox, gameObject);
+            PlayGround.GetComponent<PipeGeneration>().HandleBoxInsertion(otherBox, gameObject);
         }
     }
 
     private void OnCollisionEnter(Collision collision)
     {
-        otherBox = collision.gameObject;
+        GameObject collidedBox = collision.gameObject;
         
-        if ((tag == "CornerBox" && otherBox.tag == "EmptyCornerBox") || (tag == "DirectBox" && otherBox.tag == "EmptyDirectBox"))
+        if ((tag == "CornerBox" && collidedBox.tag == "EmptyCornerBox") || (tag == "DirectBox" && collidedBox.tag == "EmptyDirectBox"))
         {
+            otherBox = collidedBox;
             Debug.Log("collided");
             collided = true;
-            emptyBoxPos = otherBox.transform.localPosition;
         }
     }
     private void OnCollisionExit(Collision collision)

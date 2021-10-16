@@ -3444,19 +3444,19 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1145632084690255924, guid: 06f8f571712cbb049aeff2d992ce70b0, type: 3}
       propertyPath: m_Color.b
-      value: 0.6603774
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1145632084690255924, guid: 06f8f571712cbb049aeff2d992ce70b0, type: 3}
       propertyPath: m_Color.g
-      value: 0.6603774
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1145632084690255924, guid: 06f8f571712cbb049aeff2d992ce70b0, type: 3}
       propertyPath: m_Color.r
-      value: 0.6603774
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1145632084690255924, guid: 06f8f571712cbb049aeff2d992ce70b0, type: 3}
       propertyPath: m_Intensity
-      value: 2
+      value: 1.2
       objectReference: {fileID: 0}
     - target: {fileID: 1145632084690255924, guid: 06f8f571712cbb049aeff2d992ce70b0, type: 3}
       propertyPath: m_Shadows.m_Type

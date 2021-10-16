@@ -77,11 +77,11 @@ public class PipeGeneration : MonoBehaviour
                             weights.Add(new Tuple<Vector3Int, Vector3Int>(pos, new_pos), value);
                             if (dir.y == 1)
                             {
-                                weights.Add(new Tuple<Vector3Int, Vector3Int>(new_pos, pos), (int)Mathf.Ceil(value * 2.5f));
+                                weights.Add(new Tuple<Vector3Int, Vector3Int>(new_pos, pos), (int)Mathf.Ceil(value * 2f));
                             }
                             else
                             {
-                                weights.Add(new Tuple<Vector3Int, Vector3Int>(new_pos, pos), (int)Mathf.Ceil(value * 1.5f));
+                                weights.Add(new Tuple<Vector3Int, Vector3Int>(new_pos, pos), (int)Mathf.Ceil(value * 1.2f));
                             }
                         }
                     }
@@ -276,8 +276,11 @@ public class PipeGeneration : MonoBehaviour
         return a;
     }
 
-    public void HandleBoxInsertion(Vector3Int gridPosition, GameObject emptyCube, GameObject cubeToInsert)
+    public void HandleBoxInsertion(GameObject emptyCube, GameObject cubeToInsert)
     {
+        Vector3 emptyBoxLocalPos = emptyCube.transform.localPosition;
+        Vector3 gridPosition = new Vector3Int((int)emptyBoxLocalPos.x / 2, (int)emptyBoxLocalPos.y / 2, (int)emptyBoxLocalPos.z / 2);
+
         Debug.Log($"handler callled {gridPosition} {cubeToInsert.name} {emptyCube.name}");
 
         Vector3 localPos = emptyCube.transform.localPosition;

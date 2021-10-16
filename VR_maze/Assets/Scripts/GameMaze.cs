@@ -8,15 +8,15 @@ public class GameMaze : MonoBehaviour
     // Start is called before the first frame update
     enum CellState { EMPTY, WALL };
 
-    private readonly int h = 28;  // h must be even
-    private readonly int w = 28; // w must be even
+    private readonly int h = 24;  // h must be even
+    private readonly int w = 24; // w must be even
     private readonly int fixed_range = 2;
 
     private const float GridSpaceSize = 2.0f;
-    private const float targetTime = 90.0f;
+    private const float targetTime = 30.0f;
     private float currentTimer = targetTime;
     private System.Random random;
-    private GameObject[,] gameGrid;
+    private Dictionary<int, GameObject> gameGrid;
     private CellState[,] cellCurrentState;
     private int[,] CloseWallCount;
 
@@ -24,18 +24,28 @@ public class GameMaze : MonoBehaviour
     public GameObject Player;
     public GameObject Environment;
     public GameObject[] Portals;
+    public GameObject FinalDoor;
+    public Transform GoldCity;
+    public Transform GoldCityPlacement;
+    public GameObject EntryMessage;
+
+
     private static int nbResolvedMiniGame = 0;
     static public List<System.Tuple<int, int>> fixed_area; // 0 : player pos  ;  1 : first portal;  2: second portal; 3: ...
 
     void Start()
     {
         random = new System.Random();
-        gameGrid = new GameObject[h, w];
+        gameGrid = new Dictionary<int, GameObject>();
         cellCurrentState = new CellState[h, w];
         CloseWallCount = new int[h, w];
         CloseWallCount = new int[h, w];
 
+        Vector3 goldCityTranslation = -GoldCityPlacement.position;
         Environment.transform.localScale = new Vector3((float)h * GridSpaceSize, 1, w * GridSpaceSize);
+        goldCityTranslation += GoldCityPlacement.position;
+        GoldCity.position += goldCityTranslation;
+
 
         if (fixed_area == null)
         {
@@ -79,12 +89,14 @@ public class GameMaze : MonoBehaviour
                 player_j = fixed_area[3].Item2;
                 break; **/
             default:
-                player_i = 1;
-                player_j = 1;
+                player_i = 1 - fixed_range;
+                player_j = 1 - fixed_range;
+                EntryMessage.SetActive(true);
+                EntryMessage.transform.position = new Vector3((-(float)h / 2 + player_i + fixed_range) * GridSpaceSize, 0, (-(float)w / 2 + player_j + fixed_range) * GridSpaceSize);
                 break;
         }
-        player_i += fixed_range - 1;
-        player_j += fixed_range - 1;
+        player_i += fixed_range;
+        player_j += fixed_range;
         Player.transform.position = new Vector3((-(float)h / 2 + player_i) * GridSpaceSize, 0, (-(float)w / 2 + player_j) * GridSpaceSize);
 
 
@@ -108,6 +120,11 @@ public class GameMaze : MonoBehaviour
 
         if (currentTimer <= 0.0f)
         {
+            if (EntryMessage.activeInHierarchy)
+            {
+                EntryMessage.SetActive(false);
+            }
+            
             currentTimer = targetTime;
             Vector3 PlayerPosition = Player.transform.position;
 
@@ -131,17 +148,11 @@ public class GameMaze : MonoBehaviour
                 }
             }
         }
-        GenerateMaze();
-        ShowVictoryMenu();
+        FillMaze();
 
+        FinalDoor.SetActive(false);
     }
 
-    private void ShowVictoryMenu()
-    {
-        Vector3 PlayerPosition = Player.transform.position;
-        
-
-    }
 
     private void GenerateMaze()
     {
@@ -175,7 +186,7 @@ public class GameMaze : MonoBehaviour
 
             if (test <= flipCriteria)
             {
-                //FlipState(pos_i, pos_j);
+                FlipState(pos_i, pos_j);
             }
 
         }
@@ -190,11 +201,13 @@ public class GameMaze : MonoBehaviour
 
             for (int di = -fixed_range; di <= fixed_range; di++)
             {
-                for (int dj = -fixed_range / 2; dj <= fixed_range / 2; dj++)
+                for (int dj = -fixed_range; dj <= fixed_range; dj++)
                 {
-                    if (cellCurrentState[current_i + di, current_j + dj] == CellState.WALL)
+                    int new_i = current_i + di;
+                    int new_j = current_j + dj;
+                    if (new_i>=0 && new_i<h && new_j>=0 && new_j<w && cellCurrentState[new_i, new_j] == CellState.WALL)
                     {
-                        FlipState(current_i + di, current_j + dj);
+                       FlipState(new_i, new_j);
                     }
                 }
             }
@@ -229,17 +242,17 @@ public class GameMaze : MonoBehaviour
 
     private void FillCell(int i, int j)
     {
-        gameGrid[i, j] = Instantiate(FloorTilePrefab, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
-        gameGrid[i, j].transform.SetParent(transform);
-        gameGrid[i, j].transform.localPosition = new Vector3((-(float)h / 2 + i) * GridSpaceSize, 0.05f, (-(float)w / 2 + j) * GridSpaceSize);
-        gameGrid[i, j].transform.localScale = new Vector3(GridSpaceSize, 1, GridSpaceSize);
-        gameGrid[i, j].transform.name = "PlayGround : (" + i.ToString() + " , " + j.ToString() + ")";
+        gameGrid[w * i + j] = Instantiate(FloorTilePrefab, new Vector3(0.0f, 0.0f, 0.0f), Quaternion.identity);
+        gameGrid[w * i + j].transform.SetParent(transform);
+        gameGrid[w * i + j].transform.localPosition = new Vector3((-(float)h / 2 + i) * GridSpaceSize, 0.05f, (-(float)w / 2 + j) * GridSpaceSize);
+        gameGrid[w * i + j].transform.localScale = new Vector3(GridSpaceSize, 1, GridSpaceSize);
+        gameGrid[w * i + j].transform.name = "PlayGround : (" + i.ToString() + " , " + j.ToString() + ")";
     }
 
     private void DoEmptyCell(int i, int j)
     {
-        Destroy(gameGrid[i, j]);
-        gameGrid[i, j] = null;
+        Destroy(gameGrid[w * i + j]);
+        gameGrid.Remove(w * i + j);
         cellCurrentState[i, j] = CellState.EMPTY;
     }
 
@@ -251,14 +264,14 @@ public class GameMaze : MonoBehaviour
             {
                 if (cellCurrentState[i, j] == CellState.WALL)
                 {
-                    if (gameGrid[i, j] == null)
+                    if (!gameGrid.ContainsKey(w * i + j))
                     {
                         FillCell(i, j);
                     }
                 }
                 else
                 {
-                    if (gameGrid[i, j] != null)
+                    if (gameGrid.ContainsKey(w * i + j))
                     {
                         DoEmptyCell(i, j);
                     }
