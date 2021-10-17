@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1445750582297873973}
   - component: {fileID: 4058224433988868993}
   - component: {fileID: -1128866930964375226}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: CornerPipeCube
   m_TagString: CornerBox
   m_Icon: {fileID: 0}
@@ -161,7 +161,7 @@ GameObject:
   - component: {fileID: 1827873645458073496}
   - component: {fileID: 5733336511241905658}
   - component: {fileID: 4952046531053659261}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -243,7 +243,7 @@ GameObject:
   - component: {fileID: 982581172267644137}
   - component: {fileID: 1525929317605441629}
   - component: {fileID: 3107802739019727633}
-  m_Layer: 0
+  m_Layer: 3
   m_Name: Pipe_90
   m_TagString: Untagged
   m_Icon: {fileID: 0}

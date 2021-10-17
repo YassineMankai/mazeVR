@@ -190,7 +190,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.xr.picoxr": {
-      "version": "file:C:/Users/Lauriane/OneDrive/Documents/Cours/IGD/HCI M1 - Fundamentals of Extended Reality/pico",
+      "version": "file:D:/Pico/PicoXR_Platform_SDK-1.2.4_B72",
       "depth": 0,
       "source": "local",
       "dependencies": {
