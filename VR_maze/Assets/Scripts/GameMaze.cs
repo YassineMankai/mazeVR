@@ -7,6 +7,7 @@ public class GameMaze : MonoBehaviour
 {
     // Start is called before the first frame update
     enum CellState { EMPTY, WALL };
+    public enum PortalState { OPEN, CLOSED };
 
     private readonly int h = 24;  // h must be even
     private readonly int w = 24; // w must be even
@@ -32,6 +33,7 @@ public class GameMaze : MonoBehaviour
 
     private static int nbResolvedMiniGame = 0;
     static public List<System.Tuple<int, int>> fixed_area; // 0 : player pos  ;  1 : first portal;  2: second portal; 3: ...
+    static PortalState[] portalsState; 
 
     void Start()
     {
@@ -54,10 +56,16 @@ public class GameMaze : MonoBehaviour
 
             fixed_area.Add(new System.Tuple<int, int>(fixed_range, fixed_range)); // player pos
 
+            // The portals are positioned randomly in separate areas
+            // For the moment, we have only 2 min-games = 2 portals
             fixed_area.Add(new System.Tuple<int, int>(random.Next(2 * h / 3, h - fixed_range - 1), random.Next(fixed_range, w / 3))); // 1st portal : Differences
             fixed_area.Add(new System.Tuple<int, int>(random.Next(fixed_range, h / 3), random.Next(2 * w / 3, w - fixed_range - 1))); // 2nd portal : PipePuzzle 
             //fixed_area.Add(new System.Tuple<int, int>(random.Next(2 * h / 3, h - fixed_range - 1), random.Next(2 * w / 3, w - fixed_range - 1))); // 3rd portal : ObjectCollector
-
+            portalsState = new PortalState[Portals.Length];
+            for (int portal_index = 0; portal_index < Portals.Length; portal_index++)
+            {
+                portalsState[portal_index] = PortalState.OPEN;
+            }
         }
 
         for (int portal_index = 0; portal_index < Portals.Length; portal_index++)
@@ -76,13 +84,13 @@ public class GameMaze : MonoBehaviour
                 player_i = fixed_area[1].Item1;
                 player_j = fixed_area[1].Item2;
                 nbResolvedMiniGame++;
-                Portals[0].GetComponent<SceneSwitch>().setClosed();
+                portalsState[0] = PortalState.CLOSED;
                 break;
             case "PipePuzzle":
                 player_i = fixed_area[2].Item1;
                 player_j = fixed_area[2].Item2;
                 nbResolvedMiniGame++;
-                Portals[1].GetComponent<SceneSwitch>().setClosed();
+                portalsState[1] = PortalState.CLOSED;
                 break;
         /**    case "ObjectCollector":
                 player_i = fixed_area[3].Item1;
@@ -95,6 +103,15 @@ public class GameMaze : MonoBehaviour
                 EntryMessage.transform.position = new Vector3((-(float)h / 2 + 1 + fixed_range) * GridSpaceSize, 0, (-(float)w / 2 + 1 + fixed_range) * GridSpaceSize);
                 break;
         }
+        
+        for (int portalIndex=0; portalIndex< portalsState.Length; portalIndex++)
+        {
+            if (portalsState[portalIndex] == PortalState.CLOSED)
+            {
+                Portals[portalIndex].GetComponent<SceneSwitch>().setClosed();
+            }
+        }
+
         player_i += fixed_range;
         player_j += fixed_range;
         Player.transform.position = new Vector3((-(float)h / 2 + player_i) * GridSpaceSize, 0, (-(float)w / 2 + player_j) * GridSpaceSize);
