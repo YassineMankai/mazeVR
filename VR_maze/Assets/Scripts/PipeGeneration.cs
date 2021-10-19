@@ -32,6 +32,15 @@ public class PipeGeneration : MonoBehaviour
     public GameObject EmptyCube;
     public GameObject Portal;
 
+    /** To generate the pipeline, we used the following method :
+     * 1) Divide a volume to a 10 * 5 * 10 grid
+     * 2) create a randomly weighted graph from that grid with a privileged direction (x+, y+, z+)  --> GenerateRandomWeights
+     * 3) use a greedy algorith to find a short path linking (0,0,0) to (9, 4, 9)  --> PrecalculatePath
+     *    a path is a list of cube position in the grid and the cube state (filled or empty to be filled by the user)
+     * 4) generate the corresponding pipe Cube to each grid cell of the calculated path (we take into consideration the type of the 
+            cube (direct or corner) and the rotation (in Direction -> out direction : e.g: forword to left) --> GenerateCubes
+        ! if a grid cell is set to an empty cube (to be filled) a corresponding pipe cube is created in the cubes pool
+    **/
     void Start()
     {
         random = new System.Random();
@@ -45,6 +54,8 @@ public class PipeGeneration : MonoBehaviour
 
         GenerateRandomWeights();
 
+        // The following while loop is to avoid the rare case where the greedy algorithm do not converge to a correct path
+        // For a final product, this while loop can be avoid by using a more demanding shortest path algorithm
         while (!PrecalculatePath())
         {
             weights = new Dictionary<System.Tuple<Vector3Int, Vector3Int>, int>();
@@ -56,7 +67,7 @@ public class PipeGeneration : MonoBehaviour
 
     }
 
-
+    
     private void GenerateRandomWeights()
     {
         Vector3Int[] directions = { new Vector3Int(1, 0, 0), new Vector3Int(0, 1, 0), new Vector3Int(0, 0, 1) };
@@ -153,7 +164,8 @@ public class PipeGeneration : MonoBehaviour
     }
 
 
-    private void calculateCornerRotations()
+    private void calculateCornerRotations() // this function is used to set the correct map between the couple (in_direction,out_direction)
+                                                                                            // and the rotation vector of the cube
     {
         cornerRotations.Add(new Tuple<Vector3Int, Vector3Int>(Vector3Int.back, Vector3Int.left), new Vector3(0, 180, 0));
         cornerRotations.Add(new Tuple<Vector3Int, Vector3Int>(Vector3Int.right, Vector3Int.forward), new Vector3(0, 180, 0));
@@ -276,6 +288,11 @@ public class PipeGeneration : MonoBehaviour
         return a;
     }
 
+
+
+    /** This class receives custom "collision events" when a correct box is "inserted by the user
+     * HandleBoxInsertion handles these events to insert the cube holded by the user in the correct spot with the correct rotation
+    **/
     public void HandleBoxInsertion(GameObject emptyCube, GameObject cubeToInsert)
     {
         Vector3 emptyBoxLocalPos = emptyCube.transform.localPosition;

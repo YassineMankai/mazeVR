@@ -20,12 +20,12 @@ public class BoxCollisonHandler : MonoBehaviour
 
     private void Update()
     {
-        if (transform.position.y < -40)
+        if (transform.position.y < -40) // prevents the user from throwing boxes out of range
         {
             transform.localPosition = new Vector3(1 + 2.5f * (freeBoxIndex / 12), 7, 2+ 3.0f * (freeBoxIndex % 12));
         }
         
-        if (collided && Vector3.Distance(otherBox.transform.position, transform.position) <1.95f)
+        if (collided && Vector3.Distance(otherBox.transform.position, transform.position) <1.95f) // check if the collision is intentional
         {
             Debug.Log("inserted");
             inserted = true;
@@ -34,7 +34,7 @@ public class BoxCollisonHandler : MonoBehaviour
         }
     }
 
-    private void OnCollisionEnter(Collision collision)
+    private void OnCollisionEnter(Collision collision) // check if the collided empty cube is waiting for the same pipe type as this cube
     {
         GameObject collidedBox = collision.gameObject;
         
