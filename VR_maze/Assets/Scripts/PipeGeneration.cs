@@ -35,7 +35,7 @@ public class PipeGeneration : MonoBehaviour
     /** To generate the pipeline, we used the following method :
      * 1) Divide a volume to a 10 * 5 * 10 grid
      * 2) create a randomly weighted graph from that grid with a privileged direction (x+, y+, z+)  --> GenerateRandomWeights
-     * 3) use a greedy algorith to find a short path linking (0,0,0) to (9, 4, 9)  --> PrecalculatePath
+     * 3) use a greedy algorithm to find a short path linking (0,0,0) to (9, 4, 9)  --> PrecalculatePath
      *    a path is a list of cube position in the grid and the cube state (filled or empty to be filled by the user)
      * 4) generate the corresponding pipe Cube to each grid cell of the calculated path (we take into consideration the type of the 
             cube (direct or corner) and the rotation (in Direction -> out direction : e.g: forword to left) --> GenerateCubes
